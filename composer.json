@@ -1,5 +1,5 @@
 {
-    "name": "codeclimate/php-test-reporter",
+    "name": "kylekatarnls-codeclimate/php-test-reporter",
     "description": "PHP client for reporting test coverage to Code Climate",
     "keywords": [
         "codeclimate",
