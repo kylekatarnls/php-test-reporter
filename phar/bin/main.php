@@ -10,16 +10,16 @@ use CodeClimate\PhpTestReporter\ConsoleCommands\SelfUpdateCommand;
 use CodeClimate\PhpTestReporter\ConsoleCommands\UploadCommand;
 use Symfony\Component\Console\Application;
 
-require(__DIR__ . '/../../vendor/autoload.php');
+require __DIR__ . '/../../vendor/autoload.php';
 
 try {
     $app = new Application('Code Climate PHP Test Reporter', '@package_version@');
     $app->addCommands(
-        [
+        array(
             new UploadCommand('upload'),
             new SelfUpdateCommand('self-update'),
             new RollbackCommand('rollback'),
-        ]
+        )
     );
 
     $code = $app->run();

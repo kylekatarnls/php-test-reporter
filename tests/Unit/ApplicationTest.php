@@ -4,13 +4,16 @@ namespace CodeClimate\PhpTestReporter\Tests\Unit;
 use CodeClimate\PhpTestReporter\Application;
 use Symfony\Component\Console\Tester\ApplicationTester;
 
-class ApplicationTest extends \PHPUnit_Framework_TestCase
+class ApplicationTest extends \PHPUnit\Framework\TestCase
 {
     const PROJECT_DIR = "/tmp/php-test-reporter-example-project";
 
+    /**
+     * @var string
+     */
     protected $srcDir;
 
-    public function setUp()
+    protected function setUp()
     {
         $this->srcDir = realpath(__DIR__ . '/../../../../CodeClimateTestReporter');
         $this->setupProject();
@@ -26,7 +29,7 @@ class ApplicationTest extends \PHPUnit_Framework_TestCase
         $app->setAutoExit(false);
         $tester = new ApplicationTester($app);
 
-        $status = $tester->run([ '--stdout' => true ]);
+        $status = $tester->run(array( '--stdout' => true ));
 
         $this->assertEquals(0, $status);
     }

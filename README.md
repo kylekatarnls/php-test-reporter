@@ -1,5 +1,6 @@
-[![Code Climate](https://codeclimate.com/github/codeclimate/php-test-reporter.svg)](https://codeclimate.com/github/codeclimate/php-test-reporter)
 [![Build Status](https://travis-ci.org/codeclimate/php-test-reporter.svg?branch=master)](https://travis-ci.org/codeclimate/php-test-reporter)
+[![Code Climate](https://codeclimate.com/github/codeclimate/php-test-reporter.svg)](https://codeclimate.com/github/codeclimate/php-test-reporter)
+[![Test Coverage](https://codeclimate.com/github/codeclimate/php-test-reporter/badges/coverage.svg)](https://codeclimate.com/github/codeclimate/php-test-reporter/coverage)
 
 # codeclimate-test-reporter
 
@@ -140,6 +141,8 @@ the GitHub page for this project:
 https://github.com/codeclimate/php-test-reporter
 
 This package is maintained by Bryan Helmkamp (bryan@codeclimate.com).
+
+For more details, see [`CONTRIBUTING.md`](.github/CONTRIBUTING.md).
 
 ## Copyright
 

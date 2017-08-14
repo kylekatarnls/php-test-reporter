@@ -3,123 +3,195 @@ namespace CodeClimate\PhpTestReporter\TestReporter\Entity;
 
 class CiInfo
 {
+    /**
+     * @var array
+     */
+    private $info;
+
+    public function __construct(array $server)
+    {
+        $this->info = $this->infoFrom($server);
+    }
+
+    /**
+     * @return array
+     */
     public function toArray()
     {
-        if (isset($_SERVER["TRAVIS"])) {
-            return $this->travisProperties();
-        }
-
-        if (isset($_SERVER["CIRCLECI"])) {
-            return $this->circleProperties();
-        }
-
-        if (isset($_SERVER["SEMAPHORE"])) {
-            return $this->semaphoreProperties();
-        }
-
-        if (isset($_SERVER["JENKINS_URL"])) {
-            return $this->jenkinsProperties();
-        }
-
-        if (isset($_SERVER["TDDIUM"])) {
-            return $this->tddiumProperties();
-        }
-
-        if (isset($_SERVER["CI_NAME"]) && preg_match('/codeship/i', $_SERVER["CI_NAME"])) {
-            return $this->codeshipProperties();
-        }
-
-        if (isset($_SERVER["BUILDKITE"])) {
-            return $this->buildkiteProperties();
-        }
-
-        if (isset($_SERVER["WERCKER"])) {
-            return $this->werckerProperties();
-        }
-
-        return [ ];
+        return $this->info;
     }
 
-    protected function travisProperties()
+    /**
+     * @param array $server
+     * @return array
+     */
+    private function infoFrom(array $server)
     {
-        return [
+        if (isset($server["TRAVIS"])) {
+            return $this->travisProperties($server);
+        }
+
+        if (isset($server["CIRCLECI"])) {
+            return $this->circleProperties($server);
+        }
+
+        if (isset($server["SEMAPHORE"])) {
+            return $this->semaphoreProperties($server);
+        }
+
+        if (isset($server["JENKINS_URL"])) {
+            return $this->jenkinsProperties($server);
+        }
+
+        if (isset($server["TDDIUM"])) {
+            return $this->tddiumProperties($server);
+        }
+
+        if (isset($server["CI_NAME"]) && false !== stripos($server["CI_NAME"], 'codeship')) {
+            return $this->codeshipProperties($server);
+        }
+
+        if (isset($server["BUILDKITE"])) {
+            return $this->buildkiteProperties($server);
+        }
+
+        if (isset($server["WERCKER"])) {
+            return $this->werckerProperties($server);
+        }
+
+        if (isset($server["GITLAB_CI"])) {
+            return $this->gitlabCiProperties($server);
+        }
+
+        return array();
+    }
+
+    /**
+     * @param array $server
+     * @return array
+     */
+    protected function travisProperties(array $server)
+    {
+        return array(
             "name"             => "travis-ci",
-            "branch"           => $_SERVER["TRAVIS_BRANCH"],
-            "build_identifier" => $_SERVER["TRAVIS_JOB_ID"],
-            "pull_request"     => $_SERVER["TRAVIS_PULL_REQUEST"],
-        ];
+            "branch"           => $server["TRAVIS_BRANCH"],
+            "build_identifier" => $server["TRAVIS_JOB_ID"],
+            "pull_request"     => $server["TRAVIS_PULL_REQUEST"],
+        );
     }
 
-    protected function circleProperties()
+    /**
+     * @param array $server
+     * @return array
+     */
+    protected function circleProperties(array $server)
     {
-        return [
+        return array(
             "name"             => "circleci",
-            "build_identifier" => $_SERVER["CIRCLE_BUILD_NUM"],
-            "branch"           => $_SERVER["CIRCLE_BRANCH"],
-            "commit_sha"       => $_SERVER["CIRCLE_SHA1"],
-        ];
+            "build_identifier" => $server["CIRCLE_BUILD_NUM"],
+            "branch"           => $server["CIRCLE_BRANCH"],
+            "commit_sha"       => $server["CIRCLE_SHA1"],
+        );
     }
 
-    protected function semaphoreProperties()
+    /**
+     * @param array $server
+     * @return array
+     */
+    protected function semaphoreProperties(array $server)
     {
-        return [
+        return array(
             "name"             => "semaphore",
-            "branch"           => $_SERVER["BRANCH_NAME"],
-            "build_identifier" => $_SERVER["SEMAPHORE_BUILD_NUMBER"],
-        ];
+            "branch"           => $server["BRANCH_NAME"],
+            "build_identifier" => $server["SEMAPHORE_BUILD_NUMBER"],
+        );
     }
 
-    protected function jenkinsProperties()
+    /**
+     * @param array $server
+     * @return array
+     */
+    protected function jenkinsProperties(array $server)
     {
-        return [
+        return array(
             "name"             => "jenkins",
-            "build_identifier" => $_SERVER["BUILD_NUMBER"],
-            "build_url"        => $_SERVER["BUILD_URL"],
-            "branch"           => $_SERVER["GIT_BRANCH"],
-            "commit_sha"       => $_SERVER["GIT_COMMIT"],
-        ];
+            "build_identifier" => $server["BUILD_NUMBER"],
+            "build_url"        => $server["BUILD_URL"],
+            "branch"           => $server["GIT_BRANCH"],
+            "commit_sha"       => $server["GIT_COMMIT"],
+        );
     }
 
-    protected function tddiumProperties()
+    /**
+     * @param array $server
+     * @return array
+     */
+    protected function tddiumProperties(array $server)
     {
-        return [
+        return array(
             "name"             => "tddium",
-            "build_identifier" => $_SERVER["TDDIUM_SESSION_ID"],
-            "worker_id"        => $_SERVER["TDDIUM_TID"],
-        ];
+            "build_identifier" => $server["TDDIUM_SESSION_ID"],
+            "worker_id"        => $server["TDDIUM_TID"],
+        );
     }
 
-    protected function codeshipProperties()
+    /**
+     * @param array $server
+     * @return array
+     */
+    protected function codeshipProperties(array $server)
     {
-        return [
+        return array(
             "name"             => "codeship",
-            "build_identifier" => $_SERVER["CI_BUILD_NUMBER"],
-            "build_url"        => $_SERVER["CI_BUILD_URL"],
-            "branch"           => $_SERVER["CI_BRANCH"],
-            "commit_sha"       => $_SERVER["CI_COMMIT_ID"],
-        ];
+            "build_identifier" => $server["CI_BUILD_NUMBER"],
+            "build_url"        => $server["CI_BUILD_URL"],
+            "branch"           => $server["CI_BRANCH"],
+            "commit_sha"       => $server["CI_COMMIT_ID"],
+        );
     }
 
-    protected function buildkiteProperties()
+    /**
+     * @param array $server
+     * @return array
+     */
+    protected function buildkiteProperties(array $server)
     {
-        return [
+        return array(
             "name"             => "buildkite",
-            "build_identifier" => $_SERVER["BUILDKITE_BUILD_ID"],
-            "build_url"        => $_SERVER["BUILDKITE_BUILD_URL"],
-            "branch"           => $_SERVER["BUILDKITE_BRANCH"],
-            "commit_sha"       => $_SERVER["BUILDKITE_COMMIT"],
-            "pull_request"     => $_SERVER["BUILDKITE_PULL_REQUEST"],
-        ];
+            "build_identifier" => $server["BUILDKITE_BUILD_ID"],
+            "build_url"        => $server["BUILDKITE_BUILD_URL"],
+            "branch"           => $server["BUILDKITE_BRANCH"],
+            "commit_sha"       => $server["BUILDKITE_COMMIT"],
+            "pull_request"     => $server["BUILDKITE_PULL_REQUEST"],
+        );
     }
 
-    protected function werckerProperties()
+    /**
+     * @param array $server
+     * @return array
+     */
+    protected function werckerProperties(array $server)
     {
-        return [
+        return array(
             "name"             => "wercker",
-            "build_identifier" => $_SERVER["WERCKER_BUILD_ID"],
-            "build_url"        => $_SERVER["WERCKER_BUILD_URL"],
-            "branch"           => $_SERVER["WERCKER_GIT_BRANCH"],
-            "commit_sha"       => $_SERVER["WERCKER_GIT_COMMIT"],
-        ];
+            "build_identifier" => $server["WERCKER_BUILD_ID"],
+            "build_url"        => $server["WERCKER_BUILD_URL"],
+            "branch"           => $server["WERCKER_GIT_BRANCH"],
+            "commit_sha"       => $server["WERCKER_GIT_COMMIT"],
+        );
+    }
+
+    /**
+     * @param array $server
+     * @return array
+     */
+    protected function gitlabCiProperties(array $server)
+    {
+        return array(
+            "name"             => "gitlab-ci",
+            "build_identifier" => $server["CI_BUILD_ID"],
+            "branch"           => $server["CI_BUILD_REF_NAME"],
+            "commit_sha"       => $server["CI_BUILD_REF"],
+        );
     }
 }

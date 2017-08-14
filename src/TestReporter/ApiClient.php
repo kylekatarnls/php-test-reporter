@@ -5,15 +5,16 @@ use CodeClimate\PhpTestReporter\Constants\Version;
 
 class ApiClient
 {
-    protected $apiHost;
+    /**
+     * @var string
+     */
+    protected $apiHost = "https://codeclimate.com";
 
     /**
      * Init the API client and set the hostname
      */
     public function __construct()
     {
-        $this->apiHost = "https://codeclimate.com";
-
         if (isset($_SERVER["CODECLIMATE_API_HOST"])) {
             $this->apiHost = $_SERVER["CODECLIMATE_API_HOST"];
         }
@@ -22,27 +23,27 @@ class ApiClient
     /**
      * Send the given JSON as a request to the CodeClimate Server
      *
-     * @param object $json JSON data
+     * @param Entity\JsonFile $json JSON data
      *
      * @return \stdClass Response object with (code, message, headers & body properties)
      */
-    public function send($json)
+    public function send(Entity\JsonFile $json)
     {
         $response = new \stdClass;
         $payload  = (string)$json;
-        $options  = [
-            'http' => [
+        $options  = array(
+            'http' => array(
                 'method'  => 'POST',
-                'header'  => [
-                    'Host: codeclimate.com',
+                'header'  => array(
+                    'Host: ' . parse_url($this->apiHost, PHP_URL_HOST),
                     'Content-Type: application/json',
                     'User-Agent: Code Climate (PHP Test Reporter v' . Version::VERSION . ')',
                     'Content-Length: ' . strlen($payload),
-                ],
+                ),
                 'content' => $payload,
                 "timeout" => 10,
-            ],
-        ];
+            ),
+        );
         $context  = stream_context_create($options);
         $url      = $this->apiHost . '/test_reports';
 
@@ -80,12 +81,12 @@ class ApiClient
         curl_setopt(
             $curl,
             CURLOPT_HTTPHEADER,
-            [
-                'Host: codeclimate.com',
+            array(
+                'Host: ' . parse_url($this->apiHost, PHP_URL_HOST),
                 'Content-Type: application/json',
                 'User-Agent: Code Climate (PHP Test Reporter v' . Version::VERSION . ')',
                 'Content-Length: ' . strlen($payload),
-            ]
+            )
         );
         curl_setopt($curl, CURLOPT_CUSTOMREQUEST, 'POST');
         curl_setopt($curl, CURLOPT_POSTFIELDS, $payload);
@@ -96,12 +97,19 @@ class ApiClient
             $response = $this->buildResponse($response, $rawResponse);
         } else {
             $error = error_get_last();
-            preg_match('/([0-9]{3})/', $error['message'], $match);
-            $errorCode = (isset($match[1])) ? $match[1] : ($status ? $status : 500);
+            preg_match('/(\d{3})/', $error['message'], $match);
+
+            $errorCode = 500;
+
+            if (isset($match[1])) {
+                $errorCode = $match[1];
+            } elseif ($status) {
+                $errorCode = $status;
+            }
 
             $response->code    = $errorCode;
             $response->message = $error['message'];
-            $response->headers = [ ];
+            $response->headers = array( );
             $response->body    = null;
         }
 

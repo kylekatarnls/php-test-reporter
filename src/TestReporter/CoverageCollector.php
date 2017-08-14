@@ -7,14 +7,22 @@ use Satooshi\Bundle\CoverallsV1Bundle\Config\Configuration;
 
 class CoverageCollector
 {
+    /**
+     * @var Jobs
+     */
     protected $api;
 
     /**
      * Array that holds list of relative paths to Clover XML files
      * @var array
      */
-    protected $cloverPaths = [ ];
+    protected $cloverPaths = array( );
 
+    /**
+     * CoverageCollector constructor.
+     *
+     * @param string[] $paths
+     */
     public function __construct($paths)
     {
         $rootDir = getcwd();
@@ -35,7 +43,7 @@ class CoverageCollector
     /**
      * Set a list of Clover XML paths
      *
-     * @param array $paths Array of relative paths to Clovers XML files
+     * @param string[] $paths Array of relative paths to Clovers XML files
      */
     public function setCloverPaths($paths)
     {
@@ -44,24 +52,20 @@ class CoverageCollector
 
     /**
      * Get a list of Clover XML paths
-     * @return array Array of relative Clover XML file locations
+     * @return string[] Array of relative Clover XML file locations
      */
     public function getCloverPaths()
     {
         return $this->cloverPaths;
     }
 
+    /**
+     * @return JsonFile
+     */
     public function collectAsJson()
     {
-        $cloverJsonFile = $this->api->collectCloverXml()->getJsonFile();
+        $jsonFile = $this->api->collectCloverXml()->getJsonFile();
 
-        $jsonFile = new JsonFile();
-        $jsonFile->setRunAt($cloverJsonFile->getRunAt());
-
-        foreach ($cloverJsonFile->getSourceFiles() as $sourceFile) {
-            $jsonFile->addSourceFile($sourceFile);
-        }
-
-        return $jsonFile;
+        return new JsonFile($jsonFile);
     }
 }

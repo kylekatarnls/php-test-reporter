@@ -23,7 +23,7 @@ class SelfUpdateCommand extends Command
 {
     protected function configure()
     {
-        $this->setAliases([ 'selfupdate' ]);
+        $this->setAliases(array( 'selfupdate' ));
         $this->setDescription('Updates this PHAR to latest version.');
 
         $this->addOption(
@@ -40,12 +40,6 @@ class SelfUpdateCommand extends Command
         );
     }
 
-    /**
-     * @param InputInterface $input
-     * @param OutputInterface $output
-     *
-     * @return int
-     */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $logger  = new ConsoleLogger($output);
